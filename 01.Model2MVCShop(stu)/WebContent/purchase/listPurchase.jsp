@@ -1,6 +1,4 @@
-<%@page import="com.model2.mvc.service.purchase.vo.PurchaseVO"%>
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page contentType="text/html; charset=EUC-KR" %>
 
 <%@ page import="java.util.*"  %>
 <%@ page import="com.model2.mvc.service.purchase.vo.PurchaseVO" %>
@@ -8,22 +6,26 @@
 <%@ page import="com.model2.mvc.common.*" %>
 
 
-<%
-	HashMap<String,Object> map=(HashMap<String,Object>)request.getAttribute("map");
-	SearchVO searchVO=(SearchVO)request.getAttribute("searchVO");
+<%									// count(총 레코드 개수)와 list(ProductVO가 담긴)를 받아온 map
+	HashMap<String,Object> map = (HashMap<String,Object>)request.getAttribute("map");
+	SearchVO searchVO = (SearchVO)request.getAttribute("searchVO");
+	UserVO user = (UserVO)session.getAttribute("user");
 	
 	int total=0;
 	ArrayList<PurchaseVO> list=null;
 	if(map != null){
 		total=((Integer)map.get("count")).intValue();
+		// 유저액션에서 가져온 맵에 태워보낸 유저아이디와 서치중에서 서치의 카운트에접근하여 카운트만 totla에 넣는거 같음.
+		
 		list=(ArrayList<PurchaseVO>)map.get("list");
+		// 서치의 리스트에 접근하여 리스트를 list에 넣는거 같음.
 	}
 	
 	int currentPage=searchVO.getPage();
 	
 	int totalPage=0;
 	if(total > 0) {
-		totalPage= total / searchVO.getPageUnit() ;
+		totalPage= total / searchVO.getPageUnit() ; //totalpage = 전체레코드 수 /
 		if(total%searchVO.getPageUnit() >0)
 			totalPage += 1;
 	}
@@ -36,7 +38,7 @@
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
 <script type="text/javascript">
-	function fncGetUserList() {
+	function fncGetPurchaseList() {
 		document.detailForm.submit();
 	}
 </script>
@@ -46,7 +48,7 @@
 
 <div style="width: 98%; margin-left: 10px;">
 
-<form name="detailForm" action="/listPurchase.do" method="post">
+<form name="detailForm" action="/listPurchase.do?buyerId=<%=request.getParameter("buyerId") %>" method="post">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -82,49 +84,63 @@
 	<tr>
 		<td colspan="11" bgcolor="808285" height="1"></td>
 	</tr>
-		<% 	
+	
+	<%
 		int no=list.size();
 		for(int i=0; i<list.size(); i++) {
-			PurchaseVO vo = (PurchaseVO)list.get(i);
-		%>
+			PurchaseVO purchaseVO = (PurchaseVO)list.get(i);
+	%>	
 	
-	
-	<tr class="ct_list_pop">
+		<tr class="ct_list_pop">
 		<td align="center">
-	<a href="/getPurchase.do?tranNo=<%= vo.getTranNo() %>"><%=no--%></a>
+			<a href="/getPurchase.do?tranNo=<%=purchaseVO.getTranNo()%>"><%=no--%></a>
 		</td>
 		<td></td>
 		<td align="left">
-			<!-- <a href="/getUser.do?userId=user06">user06</a> -->
-			<a href="/getUser.do?userId=<%=vo.getBuyer().getUserId()%>"><%= vo.getBuyer().getUserId() %></a>
+			<a href="/getUser.do?userId=<%=purchaseVO.getBuyer().getUserId()%>"><%=purchaseVO.getBuyer().getUserId() %></a>
 		</td>
 		<td></td>
-		<td align="left"><%=vo.getReceiverName() %></td>
+		<td align="left"><%=purchaseVO.getReceiverName() %></td>
 		<td></td>
-		<td align="left"><%=vo.getReceiverPhone() %></td>
-		<td></td>
-		<td align="left">현재
-				
-					구매완료
-				상태 입니다.</td>
+		<td align="left"><%=purchaseVO.getReceiverPhone() %></td>
 		<td></td>
 		<td align="left">
-			
+		
+		<%if(purchaseVO.getTranCode().equals("1  ")){ %>
+		현재 구매완료 상태입니다.
+		<%}else if(purchaseVO.getTranCode().equals("2  ")){  %>
+		현재 배송중 상태입니다.
+		<%}else if(purchaseVO.getTranCode().equals("3  ")){ %>
+		현재 배송완료 상태입니다.
+		<%} %>
+
+	
+		</td>
+		<td></td>
+		<td align="left">
+		<%if(purchaseVO.getTranCode().equals("2  ")){ %>
+		<a href="/updateTranCode.do?tranNo=<%=purchaseVO.getTranNo()%>&tranCode=3&buyerId=<%=user.getUserId()%>">물건도착</a>
+		<%}else if(purchaseVO.getTranCode().equals("3  ")){ %>
+		<%} %>
 		</td>
 	</tr>
 	<tr>
-<% } %>
+		<td colspan="11" bgcolor="D6D7D6" height="1"></td>
+	</tr>	
+	<%} %>
+</table>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
 	<tr>
 		<td align="center">
-		 <%
+		<%
 			for(int i=1;i<=totalPage;i++){
 		%>
-			<a href="/listPurchase.do?menu=search&page=<%=i%>"><%=i %></a>
-		<%
+				<a href="/listPurchase.do?buyerId=<%=request.getParameter("buyerId") %>&page=<%=i%>"><%=i %></a>	
+		<%		
 			}
-		%>	
+		%>
+		
 		</td>
 	</tr>
 </table>

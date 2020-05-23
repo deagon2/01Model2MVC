@@ -21,7 +21,7 @@ public class AddProductAction extends Action {
 		productVO.setPrice(Integer.parseInt(request.getParameter("price")));
 		productVO.setFileName(request.getParameter("fileName"));
 		
-		System.out.println(productVO);
+		System.out.println("Product에 저장되어있는값 :: "+productVO);
 		
 		ProductService service = new ProductServiceImpl();
 		service.addProduct(productVO);
