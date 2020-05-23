@@ -151,4 +151,52 @@ public class PurchaseDAO {
 		
 		return purchaseVO;
 	}
+	
+	public void updatePurchase(PurchaseVO purchase) throws Exception{
+		
+		Connection con = DBUtil.getConnection();
+		
+		String sql="UPDATE transaction SET payment_option=?, receiver_name=?, "
+				+ "receiver_phone=?, demailaddr=?, dlvy_request=?,"
+				+ "dlvy_date=? WHERE tran_no=?";
+		
+		PreparedStatement stmt = con.prepareStatement(sql);
+		stmt.setString(1, purchase.getPaymentOption());
+		stmt.setString(2, purchase.getReceiverName());
+		stmt.setString(3, purchase.getReceiverPhone());
+		stmt.setString(4, purchase.getDivyAddr());
+		stmt.setString(5, purchase.getDivyRequest());
+		stmt.setString(6, purchase.getDivyDate());
+		stmt.setInt(7, purchase.getTranNo());
+		stmt.executeUpdate();
+		
+		con.close();
+
+	}
+
+	public void updateTranCode(PurchaseVO purchase) throws Exception{
+		
+		Connection con = DBUtil.getConnection();
+		
+		if(purchase.getPurchaseProd().getProTranCode().equals("2")) {
+			
+			String sql="UPDATE transaction SET tran_status_code='2'"
+					+ " WHERE prod_no=?";
+		
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, purchase.getPurchaseProd().getProdNo());
+			stmt.executeUpdate();
+					
+		}else if(purchase.getPurchaseProd().getProTranCode().equals("3")) {
+			
+			String sql="UPDATE transaction SET tran_status_code='3'"
+					+ " WHERE tran_no=?";
+			
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, purchase.getTranNo());
+			stmt.executeUpdate();
+		}
+		
+		con.close();
+	}
 }

@@ -47,12 +47,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	@Override
 	public void updatePurcahse(PurchaseVO purchase) throws Exception {
-//		purchaseDAO.updatePurchase(purchase);		
+		purchaseDAO.updatePurchase(purchase);		
 	}
 
 	@Override
 	public void updateTranCode(PurchaseVO purchase) throws Exception {
-//		purchaseDAO.updateTranCode(purchase);
+		purchaseDAO.updateTranCode(purchase);
 		
 	}
 	
