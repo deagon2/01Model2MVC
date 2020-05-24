@@ -15,22 +15,36 @@ public class UpdateProductAction extends Action {
 	@Override
 	public String execute(	HttpServletRequest request,
 												HttpServletResponse response) throws Exception {
+		System.out.println("들어온거확인");
 		
 		int prodNo=Integer.parseInt(request.getParameter("prodNo"));
-		System.out.println(" prodNo들어있는값 :: "+prodNo);
 		
-		ProductVO productVO=new ProductVO();
+		ProductVO productVO = new ProductVO();
 		productVO.setProdNo(prodNo);
+		System.out.println("prodNo :"+request.getParameter("prodNo"));
+		
 		productVO.setProdName(request.getParameter("prodName"));
+		System.out.println("prodName :"+request.getParameter("prodName"));
+		
 		productVO.setProdDetail(request.getParameter("prodDetail"));
-		productVO.setManuDate(request.getParameter("manuDate"));
+		System.out.println("prodDetail :"+request.getParameter("prodDetail"));
+		
 		productVO.setPrice(Integer.parseInt(request.getParameter("price")));
+		System.out.println("price :"+request.getParameter("price"));
+		
 		productVO.setFileName(request.getParameter("fileName"));
+		System.out.println("fileName :"+request.getParameter("fileName"));
 		
-		ProductService service=new ProductServiceImpl();
+		ProductService service = new ProductServiceImpl();
 		service.updateProduct(productVO);
+		System.out.println();
+		HttpSession session = request.getSession();
+		int sessionId = ((ProductVO)session.getAttribute("product")).getProdNo();
+		//System.out.println(productVO);
+		if( sessionId == prodNo){
+			session.setAttribute("product", productVO);
+		}
 		
-		return "redirect:/getProduct.do?prodNo="+prodNo+"&menu=manage";
+		return "forward:/getProduct.do?"+prodNo+"&menu=manage";
 	}
-
 }
